@@ -94,7 +94,7 @@ def load_weights(variables, file_name):
 
 
 def main():
-    model = Yolo_v3(n_classes=80, model_size=(416, 416),
+    model = Yolo_v3(n_classes=11, model_size=(416, 416),
                     max_output_size=5,
                     iou_threshold=0.5,
                     confidence_threshold=0.5)
@@ -104,7 +104,7 @@ def main():
     model(inputs, training=False)
 
     model_vars = tf.compat.v1.global_variables(scope='yolo_v3_model')
-    assign_ops = load_weights(model_vars, './weights/yolov3.weights')
+    assign_ops = load_weights(model_vars, './weights/yolov3_custom_last.weights')
 
     saver = tf.compat.v1.train.Saver(tf.compat.v1.global_variables(scope='yolo_v3_model'))
 

@@ -1,1 +1,5 @@
 __pycache__
+weights/
+yolo
+.vscode
+meme_example.jpg

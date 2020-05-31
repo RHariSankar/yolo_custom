@@ -15,17 +15,18 @@ Note that only one video can be processed at one run.
 import tensorflow as tf
 import sys
 import cv2
+import time
 
 from yolo_v3 import Yolo_v3
 from utils import load_images, load_class_names, draw_boxes, draw_frame
 
 tf.compat.v1.disable_eager_execution()
 
-_MODEL_SIZE = (416, 416)
-_CLASS_NAMES_FILE = './data/labels/coco.names'
-_MAX_OUTPUT_SIZE = 20
+_MODEL_SIZE = (608, 608)
+_CLASS_NAMES_FILE = './data/labels/obj.names'
+_MAX_OUTPUT_SIZE = 50
 
-
+tic = time.time()
 def main(type, iou_threshold, confidence_threshold, input_names):
     class_names = load_class_names(_CLASS_NAMES_FILE)
     n_classes = len(class_names)
@@ -38,6 +39,7 @@ def main(type, iou_threshold, confidence_threshold, input_names):
     if type == 'images':
         batch_size = len(input_names)
         batch = load_images(input_names, model_size=_MODEL_SIZE)
+        print(batch.shape)
         inputs = tf.compat.v1.placeholder(tf.float32, [batch_size, *_MODEL_SIZE, 3])
         detections = model(inputs, training=False)
         saver = tf.compat.v1.train.Saver(tf.compat.v1.global_variables(scope='yolo_v3_model'))
@@ -45,10 +47,13 @@ def main(type, iou_threshold, confidence_threshold, input_names):
         with tf.compat.v1.Session() as sess:
             saver.restore(sess, './weights/model.ckpt')
             detection_result = sess.run(detections, feed_dict={inputs: batch})
-
+        
+        print(detection_result[0])
         draw_boxes(input_names, detection_result, class_names, _MODEL_SIZE)
 
         print('Detections have been saved successfully.')
+        tac = time.time()
+        print(tac-tic)
 
     elif type == 'video':
         inputs = tf.compat.v1.placeholder(tf.float32, [1, *_MODEL_SIZE, 3])
