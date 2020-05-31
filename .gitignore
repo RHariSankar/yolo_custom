@@ -3,3 +3,5 @@ weights/
 yolo
 .vscode
 meme_example.jpg
+data/video/
+data/detection_examples/
